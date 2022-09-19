@@ -1,0 +1,8 @@
+{% autoescape off %}
+    Hi {{ user_display }},
+    We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes.
+
+    Please confirm that {{ email }} is your email address.
+    Click on the link below to activate the your account.
+    http://localhost:8000{% url 'activate' uid=uid token=token %}
+{% endautoescape %}

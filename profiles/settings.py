@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import environ
+import dj_database_url
+import os
 
 env = environ.Env()
 environ.Env.read_env()
@@ -46,8 +48,12 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'corsheaders',
+    'drf_yasg',
+    "rest_framework.authtoken",
+    
 
     'authentication',
+    'people',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +72,7 @@ ROOT_URLCONF = 'profiles.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,12 +91,23 @@ WSGI_APPLICATION = 'profiles.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+MAX_CONN_AGE = 600
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'profiles', 
+        'USER': 'mwapsam', 
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
     }
 }
+
+if "DATABASE_URL" in os.environ:
+    DATABASES["default"] = dj_database_url.config(
+        conn_max_age=MAX_CONN_AGE, ssl_require=False)
+
 
 
 # Password validation
@@ -138,3 +155,17 @@ AUTH_USER_MODEL = 'authentication.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+SENDGRID_API_KEY = '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'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_PORT = 587
+SENDGRID_SANDBOX_MODE_IN_DEBUG=False
+SENDGRID_ECHO_TO_STDOUT=True
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'dev@mwape.ml'
+
+
+FRONTEND_URL = 'http://localhost:3000'

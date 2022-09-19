@@ -4,8 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
+from django.utils.http import urlsafe_base64_decode
+from django.http import HttpResponse
 from .serializers import UserSerializer
 from .models import User
+from .token import account_activation_token
 
 class RegisterView(APIView):
     def post(self, request):
@@ -70,3 +73,20 @@ class LogoutView(APIView):
             'message': 'successfully signed out!'
         }
         return response
+
+class ActivateAccount(APIView):
+    def get(self, request, uid, token):
+        try:
+            uid = urlsafe_base64_decode(uid).decode()
+            print(uid)
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return HttpResponse("<h3>Account is activated successfully. Please login to your account <a href='http://localhost:3000/login'>here</a></h3>")
+        else:
+            return HttpResponse('<h3>Invalid activation link</h3>')
+
