@@ -169,3 +169,6 @@ DEFAULT_FROM_EMAIL = 'admin@profile11.tk'
 
 
 FRONTEND_URL = 'https://api.profile11.tk'
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.profile11.tk'
+]
