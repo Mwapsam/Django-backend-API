@@ -168,4 +168,4 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'admin@profile11.tk'
 
 
-FRONTEND_URL = 'http://profile11.tk'
+FRONTEND_URL = 'https://api.profile11.tk'
