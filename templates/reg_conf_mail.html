@@ -4,5 +4,5 @@
 
     Please confirm that {{ email }} is your email address.
     Click on the link below to activate the your account.
-    http://localhost:8000{% url 'activate' uid=uid token=token %}
+    http://{{ site }}{% url 'activate' uid=uid token=token %}
 {% endautoescape %}

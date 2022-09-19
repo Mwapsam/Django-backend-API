@@ -165,7 +165,7 @@ EMAIL_PORT = 587
 SENDGRID_SANDBOX_MODE_IN_DEBUG=False
 SENDGRID_ECHO_TO_STDOUT=True
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'dev@mwape.ml'
+DEFAULT_FROM_EMAIL = 'admin@profile11.tk'
 
 
-FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = 'http://profile11.tk'
