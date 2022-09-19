@@ -11,43 +11,36 @@ from django.contrib.auth.models import BaseUserManager
 from django.core.validators import RegexValidator
 
 class UserManager(BaseUserManager):
-    def _create_user(self, firstname, lastname, email, phoneNumber, password=None, **extra_fields):
-        if not firstname:
-            raise ValueError('The given firstname must be set')
-
-        if not lastname:
-            raise ValueError('The given lastname must be set')
-
+    def _create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The given email must be set')
 
-        if not phoneNumber:
-            raise ValueError('The given phone number must be set')
-
         email = self.normalize_email(email)
-        user = self.model(firstname=firstname, lastname=lastname, email=email, phoneNumber=phoneNumber, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_user(self, firstname, lastname, email, phoneNumber, password=None, **extra_fields):
+    def create_user(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
 
-        return self._create_user(firstname, lastname, email, phoneNumber, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, firstname, lastname, email, phoneNumber, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+    def create_superuser(self, email, password):
+        user = self.create_user(
+            email=self.normalize_email(email),
+            password=password,
+        )
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_manager = True
+        user.is_active = True
+        user.save(using=self._db)
+        return user
 
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        return self._create_user(firstname, lastname, email, phoneNumber, password, **extra_fields)
 
 class User(PermissionsMixin, AbstractBaseUser):
     firstname = models.CharField(db_index=True, max_length=255, unique=True)
@@ -68,7 +61,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
 
-    REQUIRED_FIELDS = ('fistname', 'lastname')
+    # REQUIRED_FIELDS = ('firstname',)
 
     objects = UserManager()
 
