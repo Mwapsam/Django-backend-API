@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 
     'authentication',
     'people',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -144,7 +145,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+USE_S3 = env('USE_S3') == 'TRUE'
+
+if USE_S3:
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    AWS_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+else:
+    STATIC_URL = '/staticfiles/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+MEDIA_URL = os.path.join(BASE_DIR, '/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -157,7 +177,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-SENDGRID_API_KEY = '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'
+SENDGRID_API_KEY = env('DJANGO_SENDGRID_API_KEY')
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
@@ -165,10 +185,10 @@ EMAIL_PORT = 587
 SENDGRID_SANDBOX_MODE_IN_DEBUG=False
 SENDGRID_ECHO_TO_STDOUT=True
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'admin@profile11.tk'
+DEFAULT_FROM_EMAIL = env('DJANGO_EMAIL_HOST_USER')
 
 
 FRONTEND_URL = 'https://api.profile11.tk'
 CSRF_TRUSTED_ORIGINS = [
-    'https://api.profile11.tk'
+    'https://api.profile11.tk', 'http://localhost:3000'
 ]
