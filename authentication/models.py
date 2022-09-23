@@ -74,4 +74,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     def get_short_name(self):
         return self.firstname
 
+
+
         
