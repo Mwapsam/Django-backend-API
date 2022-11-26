@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import environ
 import dj_database_url
+from corsheaders.defaults import default_headers
 import os
 
 env = environ.Env()
@@ -62,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -173,9 +174,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.User'
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SENDGRID_API_KEY = env('DJANGO_SENDGRID_API_KEY')
 EMAIL_HOST = 'smtp.sendgrid.net'
@@ -189,6 +187,19 @@ DEFAULT_FROM_EMAIL = env('DJANGO_EMAIL_HOST_USER')
 
 
 FRONTEND_URL = 'https://api.profile11.tk'
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     'https://api.profile11.tk', 'http://localhost:3000'
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
+# CORS_EXPOSE_HEADERS = ["Content-Type", "Set-Cookie"]
+CORS_ALLOW_CREDENTIALS = True
